@@ -1,0 +1,36 @@
+os: osx
+env:
+  global:
+  - MODULE_NAME=ti.mely
+cache:
+  directories:
+  - node_modules
+  - $HOME/android-ndk-r11c
+before_install:
+- MODULE_ROOT=$PWD
+- brew update
+- brew install nvm
+- nvm install 4.7.0
+- npm config delete prefix
+- nvm use --delete-prefix v4.4.7 4.7.0
+- rvm get head
+install:
+- cd $MODULE_ROOT
+- curl -o install.sh https://raw.githubusercontent.com/williamrijksen/ci/v8/travis/install.sh
+- source install.sh -s "--branch master"
+before_script:
+- curl -o script.sh https://raw.githubusercontent.com/williamrijksen/ci/v8/travis/script.sh
+- chmod +x script.sh
+script:
+- MODULE_ROOT=$MODULE_ROOT bash script.sh
+
+deploy:
+  skip_cleanup: true
+  provider: releases
+  api_key:
+    secure: Fk7oPEJk52QvegiNbXyxW9piijdQB/UazidydOni05krHvdZvRcb6BUZDO8XWvS1SymsA5yvLazYgYAtW8oJGXBxCyUHMhWwoVDQNZQthAFg5cIFluSTBTC+u9XwIc0xCB2rB5L9XNKR5W7oku1WnvQP1mCplmGTMvVoQtjf237s4QeYAxgRbMaZlcDu6gLOKNI9wEWdVUAptIx+lDKyIPhduhSPdvm6UVd02VMPPG18kjr42imv8RnNk7BzXQBObiuJxooYQFhbMOQZJxbrht3EKk/AYuRRbIDhbrpOMu6RQNS6/ryU0G1LV1YVAl098RLI58XKyIxTTzDcsDm+nsTnKPaJC2EsuzS+Fqu33PBdXssDT4Vd5ONEHPqPlXoqP7RyqAhnc8fl6eS2Cw/7kCK0U9rsy99F5b9Wdi84eE8s3n/TFsjfUnDdU8ns1COl9rBXrHddFQ/rg3mMOwEOynGnQG2erTx0XKuBJqA1i/nFUcQlh6box0TuAQ9b7nghXiU1VsrV9eJPx4dXSlrDfw5LPcxskZgjtiu+t+qNbGko6buQw2tt4TTPNh2jJvQhZ6kROxyZymwZgNxNUQ5lJwpJRVTKk4CKd/pHX4QHhstnBXJQ0fl0sKxaZUqiK0ubnob1pAj7zpVkRRXQisV5Ms5lkDO66HHcZqeulG5mDhg=
+  file:
+    - $MODULE_ROOT/android/dist/ti.mely-android-${TRAVIS_TAG}.zip
+  on:
+    repo: williamrijksen/ti.mely
+    tags: true
